@@ -14,6 +14,8 @@ def test_model(t_model, img):
 
     predict = t_model.predict([[gray]])
     predict_img = (predict[0] + 1) * (64, 32, 64, 32)
+    print(predict[0])
+    print(predict_img)
 
     left = int(width / 128 * predict_img[0])
     top = int(height / 64 * predict_img[1])
@@ -57,7 +59,7 @@ model = tf.keras.models.Sequential([
     tf.keras.layers.Dense(4, input_shape=(500, 4)),
 ])
 
-# model = tf.keras.models.load_model('model_v1.h5')
+model = tf.keras.models.load_model('model_v1.h5')
 
 model.compile(optimizer=tf.compat.v1.train.AdamOptimizer(),
               loss='mean_squared_error',
@@ -65,8 +67,12 @@ model.compile(optimizer=tf.compat.v1.train.AdamOptimizer(),
 
 # model.summary()
 
-history = model.fit(train_images, train_labels, epochs=30, batch_size=20, verbose=True)
+# history = model.fit(train_images, train_labels, epochs=30, batch_size=20, verbose=True)
 
-# model.save('model_v1.h5')
+model.save('model_v1.h5')
 
 results = model.evaluate(test_images, test_labels)
+
+
+img = cv.imread('numberplate_3.jpg')
+test_model(model, img)
