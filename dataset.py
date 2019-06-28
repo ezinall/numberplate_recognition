@@ -3,11 +3,10 @@ import json
 
 import cv2 as cv
 import numpy as np
-from skimage import io
 
 
-IMG_PATH = 'Licence plates/artificial/img'
-DATA_PATH = 'Licence plates/artificial/ann'
+IMG_PATH = 'artificial/img'
+DATA_PATH = 'artificial/ann'
 
 
 def load_data(img_path=IMG_PATH, data_path=DATA_PATH, split=9781):
@@ -16,7 +15,6 @@ def load_data(img_path=IMG_PATH, data_path=DATA_PATH, split=9781):
     for file in sorted(os.listdir(img_path)):
         img = cv.imread(os.path.join(img_path, file))
         gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY) / 255
-        # img = io.imread(os.path.join(img_path, file))[:, :] / 255
         img_list.append(gray)
     for file in sorted(os.listdir(data_path)):
         with open(os.path.join(data_path, file)) as f:

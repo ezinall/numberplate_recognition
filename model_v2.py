@@ -4,8 +4,12 @@ from dataset import load_data
 
 
 DIGITS = "0123456789"
-LETTERS = "ABCKEHMOPTXY"
+LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 CHARS = LETTERS + DIGITS
+
+
+def add_fun(x):
+    return tf.add(x[0], x[1])
 
 
 def get_loss(y, y_):
@@ -41,7 +45,7 @@ train_labels = train_labels / (64.0, 32.0, 64.0, 32.0) - 1.0
 test_labels = test_labels / (64.0, 32.0, 64.0, 32.0) - 1.0
 
 model = tf.keras.models.Sequential([
-    tf.keras.layers.Reshape([4, 64, 128, 1]),
+    tf.keras.layers.Lambda(lambda x: tf.expand_dims(x, 3), input_shape=(64, 128)),
     tf.keras.layers.Conv2D(48, (2, 2), input_shape=(5, 5, 1, 48), padding='same', activation=tf.nn.relu),
     tf.keras.layers.MaxPool2D(strides=(2, 2), padding='same'),
 
@@ -51,13 +55,13 @@ model = tf.keras.models.Sequential([
     tf.keras.layers.Conv2D(128, (2, 2), input_shape=(5, 5, 64, 128), padding='same', activation=tf.nn.relu),
     tf.keras.layers.MaxPool2D(strides=(2, 2), padding='same'),
 
-    tf.keras.layers.Reshape([8, 32, 128, 2048]),
+    tf.keras.layers.Reshape([8, 32, 128]),
     tf.keras.layers.Conv2D(2048, (2, 2), input_shape=(8 * 32 * 128, 2048), activation=tf.nn.relu),
 
-    tf.keras.layers.Reshape([1, 1, 2048, 1 + 7 * len(CHARS)]),
-    tf.keras.layers.Conv2D(1 + 7 * len(CHARS), (2, 2), input_shape=(2048, 1 + 7 * len(CHARS))),
+    tf.keras.layers.Reshape([1, 2048, 1 + 7 * len(CHARS)]),
+    tf.keras.layers.Conv2D(1 + 7 * len(CHARS), (2, 2), padding='same', input_shape=(2048, 1 + 7 * len(CHARS))),
 
-    tf.keras.layers.Reshape([-1, 32 * 8 * 128]),
+    tf.keras.layers.Reshape([32 * 8 * 128]),
     tf.keras.layers.Dense(2048, input_shape=(32 * 8 * 128, 2048), activation=tf.nn.relu),
 
     tf.keras.layers.Dense(1 + 7 * len(CHARS), input_shape=(2048, 1 + 7 * len(CHARS))),
